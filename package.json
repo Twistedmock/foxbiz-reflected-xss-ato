@@ -1,0 +1,9 @@
+{
+  "name": "foxbiz-reflected-xss-ato",
+  "version": "1.0.0",
+  "description": "Reflected XSS → Account Takeover PoC",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
