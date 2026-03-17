@@ -68,9 +68,10 @@ const server = http.createServer((req, res) => {
 
       f.onload = function() {
         // Wait for ag.app.js inside iframe to fully initialize
+        var myOrigin = window.location.protocol + '//' + window.location.host;
         setTimeout(function() {
-          f.contentWindow.postMessage({type:'fnnBrokerRequest',name:'hasPendingPasswordless',origin:'https://www.foxbusiness.com'},'https://my.foxbusiness.com');
-          f.contentWindow.postMessage({type:'fnnBrokerRequest',name:'silentLogin',origin:'https://www.foxbusiness.com'},'https://my.foxbusiness.com');
+          f.contentWindow.postMessage({type:'fnnBrokerRequest',name:'hasPendingPasswordless',origin:myOrigin},'https://my.foxbusiness.com');
+          f.contentWindow.postMessage({type:'fnnBrokerRequest',name:'silentLogin',origin:myOrigin},'https://my.foxbusiness.com');
         }, 1500);
       };
     });
